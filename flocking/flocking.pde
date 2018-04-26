@@ -14,22 +14,27 @@ class Avoid {
      //rect(pos.x, pos.y, 15, 5);
      stroke(0);
      //fill(255);
-     line(pos.x,pos.y+0.5,250.0,pos.x,pos.y-0.5,250.0);
+     //line(pos.x,pos.y+0.5,250.0,pos.x,pos.y-0.5,250.0);
      
-     line(pos.x-0.5,pos.y,0,pos.x+0.5,pos.y,0);
-     line(pos.x,pos.y-0.5,0,pos.x,pos.y+0.5,0);
+     //line(pos.x-0.5,pos.y,0,pos.x+0.5,pos.y,0);
+     //line(pos.x,pos.y-0.5,0,pos.x,pos.y+0.5,0);
      
-     line(pos.x+0.5,pos.y,250.0,pos.x-0.5,pos.y,250.0);
-     stroke(255);
-     line(pos.x,pos.y-0.5,0,pos.x,pos.y-0.5,250.0);
-     line(pos.x-0.5,pos.y,0,pos.x-0.5,pos.y,250.0);
-     line(pos.x+0.5,pos.y,250.0,pos.x+0.5,pos.y,0);
-     line(pos.x,pos.y+0.5,250.0,pos.x,pos.y+0.5,0);
-     noStroke();
-     line(pos.x,pos.y-(height/4),250.0,pos.x,pos.y+(height/4),250.0);
-     line(pos.x,pos.y-(height/4),0.0,pos.x,pos.y+(height/4),0.0);
-     line(pos.x-(width/8),pos.y,250.0,pos.x+(width/8),pos.y,250.0);
-     line(pos.x-(width/8),pos.y,0.0,pos.x+(width/8),pos.y,0.0);
+     //line(pos.x+0.5,pos.y,250.0,pos.x-0.5,pos.y,250.0);
+     //stroke(255);
+     //line(pos.x,pos.y-0.5,0,pos.x,pos.y-0.5,250.0);
+     //line(pos.x-0.5,pos.y,0,pos.x-0.5,pos.y,250.0);
+     //line(pos.x+0.5,pos.y,250.0,pos.x+0.5,pos.y,0);
+     //line(pos.x,pos.y+0.5,250.0,pos.x,pos.y+0.5,0);
+     //noStroke();
+     //for(float i=-0.5; i <= 0.5; i=i+.1)
+     //{
+     //  line(pos.x+i,pos.y-(height/2),250.0,pos.x+i,pos.y+(height/2),250.0);
+     //  line(pos.x-(width/4),pos.y+i,250.0,pos.x+(width/4),pos.y+i,250.0);
+     //}
+     rect(pos.x,pos.y,.5,.5);
+     
+     
+     //line(pos.x-(width/8),pos.y,0.0,pos.x+(width/8),pos.y,0.0);
    }
 }
 class Boid {
@@ -62,6 +67,10 @@ class Boid {
       // update our friend array (lots of square roots)
       getFriends();
     }
+    //PVector noise = new PVector(0, 0, random(2) -1);
+    //noise.mult(.1);
+    //move.add(noise);
+    
     flock();
     pos.add(move);
   }
@@ -74,19 +83,20 @@ class Boid {
     PVector cohese = getCohesion();
 
     allign.mult(1);
-    if (!option_friend) allign.mult(0);
+    //if (!option_friend) allign.mult(0);
     
     avoidDir.mult(1);
-    if (!option_crowd) avoidDir.mult(0);
+    //if (!option_crowd) avoidDir.mult(0);
     
     avoidObjects.mult(3);
-    if (!option_avoid) avoidObjects.mult(0);
+    //if (!option_avoid) avoidObjects.mult(0);
 
     noise.mult(0.1);
-    if (!option_noise) noise.mult(0);
+    if (!option_noise)
+    noise.mult(0);
 
     cohese.mult(1);
-    if (!option_cohese) cohese.mult(0);
+    //if (!option_cohese) cohese.mult(0);
     
     stroke(0, 255, 160);
 
@@ -98,9 +108,9 @@ class Boid {
 
     move.limit(maxSpeed);
     
-    shade += getAverageColor() * 0.03;
-    shade += (random(2) - 1) ;
-    shade = (shade + 255) % 255; //max(0, min(255, shade));
+    //shade += getAverageColor() * 0.03;
+    //shade += (random(2) - 1) ;
+    //shade = (shade + 255) % 255; //max(0, min(255, shade));
   }
 
   void getFriends () {
@@ -224,14 +234,22 @@ class Boid {
       //line(this.pos.x, this.pos.y, f.pos.x, f.pos.y);
     }
     noStroke();
+    stroke(0);
     fill(shade, 90, 200);
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
     rotate(move.heading());
     beginShape();
     vertex(15 * globalScale, 0, 0);
-    vertex(-7* globalScale, 7* globalScale, 0);
-    vertex(-7* globalScale, -7* globalScale, 0);
+    vertex(-5* globalScale, 5* globalScale, 0);
+    vertex(0,0,0);
+    vertex(-5* globalScale, -5* globalScale, 0);
+    endShape(CLOSE);
+    beginShape();
+    vertex(0, 0, 0);
+    vertex(0,0,-5* globalScale);
+    vertex(15 * globalScale, 0, 0);
+    //vertex(-7* globalScale, -7* globalScale, 0);
     endShape(CLOSE);
     popMatrix();
   }
@@ -252,7 +270,7 @@ Boid barry;
 ArrayList<Boid> boids;
 ArrayList<Avoid> avoids;
 
-float globalScale = .91;
+float globalScale = 1;
 float eraseRadius = 20;
 String tool = "boids";
 
@@ -298,31 +316,45 @@ void recalculateConstants () {
   maxSpeed = 2.1 * globalScale;
   friendRadius = 60 * globalScale;
   crowdRadius = (friendRadius / 1.3);
-  avoidRadius = 150 * globalScale;
+  avoidRadius = 20* globalScale;
   coheseRadius = friendRadius;
 }
 
 
 void setupWalls() {
   avoids = new ArrayList<Avoid>();
-   for (int x = 0; x <= (width/4); x+= 1) {
-    avoids.add(new Avoid(x, 0, 0));
-    avoids.add(new Avoid(x, height/2,0));
+   for (int x = 0; x <= (width/4); x+= 10) {
+    for(int y=0; y<=height/2; y+=10)
+    {
+      avoids.add(new Avoid(x,y,0));
+      avoids.add(new Avoid(x,y,250));
+    }
   } 
-  for (int y = 0; y <= (height/2); y+= 1) {
-    avoids.add(new Avoid(0, y, 0));
-    avoids.add(new Avoid(width/4, y,0));
+  for (int y = 0; y<= (height/2); y+= 10) {
+    for(int z=0; z<=250; z+=10)
+    {
+      avoids.add(new Avoid(0,y,z));
+      avoids.add(new Avoid(width/4,y,z));
+    }
   } 
+  for (int x = 0; x <= (width/4); x+= 10) {
+    for(int z=0; z<=250; z+=10)
+    {
+      avoids.add(new Avoid(x,0,z));
+      avoids.add(new Avoid(x,height/2,z));
+    }
+  } 
+  
   //avoids.add(new Avoid(0,0,0));
 }
 
-//void setupCircle() {
-//  avoids = new ArrayList<Avoid>();
-//   for (int x = 0; x < 50; x+= 1) {
-//     float dir = (x / 50.0) * TWO_PI;
-//    avoids.add(new Avoid(width * 0.5 + cos(dir) * height*.4, height * 0.5 + sin(dir)*height*.4,0));
-//  } 
-//}
+void setupCircle() {
+  avoids = new ArrayList<Avoid>();
+   for (int x = 0; x < 50; x+= 1) {
+     float dir = (x / 50.0) * TWO_PI;
+    avoids.add(new Avoid(width * 0.5 + cos(dir) * height*.4, height * 0.5 + sin(dir)*height*.4,0));
+  } 
+}
 
 
 void draw () {
@@ -341,7 +373,14 @@ void draw () {
   //stroke(155);
   //line(0.0,0.0,0.0,0.0,height/2,0.0);
   //stroke(055);
-  line(0.0,0.0,0.0,0.0,0.0,270.0);
+  line(0.0,0.0,0.0,0.0,0.0,250.0);
+  line(width/4,0.0,0.0,width/4,0.0,250.0);
+  line(0.0,height/2,0.0,0.0,height/2,250.0);
+  line(width/4,height/2,0.0,width/4,height/2,250.0);
+  line(0.0,0.0,250.0,width/4,0.0,250.0);
+  line(0.0,0.0,250.0,0.0,height/2,250.0);
+  line(0.0,height/2,250.0,width/4,height/2,250.0);
+  line(width/4,height/2,250.0,width/4,0.0,250.0);
   //line(width/4,0.0,0.0,width/4,0.0,310.0);
   //line(width/4,0.0,0.0,width/4,height/2,0.0);
   //line(0.0,height/2,0.0,0.0,height/2,310.0);
@@ -388,45 +427,45 @@ void draw () {
   drawGUI();
 }
 
-//void keyPressed () {
-//  if (key == 'q') {
-//    tool = "boids";
-//    message("Add boids");
-//  } else if (key == 'w') {
-//    tool = "avoids";
-//    message("Place obstacles");
-//  } else if (key == 'e') {
-//    tool = "erase";
-//    message("Eraser");
-//  } else if (key == '-') {
-//    message("Decreased scale");
-//    globalScale *= 0.8;
-//  } else if (key == '=') {
-//      message("Increased Scale");
-//    globalScale /= 0.8;
-//  } else if (key == '1') {
-//     option_friend = option_friend ? false : true;
-//     message("Turned friend allignment " + on(option_friend));
-//  } else if (key == '2') {
-//     option_crowd = option_crowd ? false : true;
-//     message("Turned crowding avoidance " + on(option_crowd));
-//  } else if (key == '3') {
-//     option_avoid = option_avoid ? false : true;
-//     message("Turned obstacle avoidance " + on(option_avoid));
-//  }else if (key == '4') {
-//     option_cohese = option_cohese ? false : true;
-//     message("Turned cohesion " + on(option_cohese));
-//  }else if (key == '5') {
-//     option_noise = option_noise ? false : true;
-//     message("Turned noise " + on(option_noise));
-//  } else if (key == ',') {
-//     setupWalls(); 
-//  } else if (key == '.') {
-//     setupCircle(); 
-//  }
-//  recalculateConstants();
+void keyPressed () {
+  if (key == 'q') {
+    tool = "boids";
+    message("Add boids");
+  } else if (key == 'w') {
+    tool = "avoids";
+    message("Place obstacles");
+  } else if (key == 'e') {
+    tool = "erase";
+    message("Eraser");
+  } else if (key == '-') {
+    message("Decreased scale");
+    globalScale *= 0.8;
+  } else if (key == '=') {
+      message("Increased Scale");
+    globalScale /= 0.8;
+  } else if (key == '1') {
+     option_friend = option_friend ? false : true;
+     message("Turned friend allignment " + on(option_friend));
+  } else if (key == '2') {
+     option_crowd = option_crowd ? false : true;
+     message("Turned crowding avoidance " + on(option_crowd));
+  } else if (key == '3') {
+     option_avoid = option_avoid ? false : true;
+     message("Turned obstacle avoidance " + on(option_avoid));
+  }else if (key == '4') {
+     option_cohese = option_cohese ? false : true;
+     message("Turned cohesion " + on(option_cohese));
+  }else if (key == '5') {
+     option_noise = option_noise ? false : true;
+     message("Turned noise " + on(option_noise));
+  } else if (key == ',') {
+     setupWalls(); 
+  } else if (key == '.') {
+     setupCircle(); 
+  }
+  recalculateConstants();
 
-//}
+}
 
 void drawGUI() {
    if(messageTimer > 0) {
@@ -452,11 +491,11 @@ void mousePressed () {
   
   switch (tool) {
   case "boids":
-    boids.add(new Boid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,0));
+    boids.add(new Boid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,125));
     message(boids.size() + " Total Boid" + s(boids.size()));
     break;
   case "avoids":
-    avoids.add(new Avoid(mouseX, mouseY, 0));
+    avoids.add(new Avoid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,0));
     break;
   }
 }
