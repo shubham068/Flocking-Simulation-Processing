@@ -106,7 +106,7 @@ class Boid {
     move.add(noise);
     move.add(cohese);
 
-    move.limit(maxSpeed);
+    move.limit(1.2*maxSpeed);
     
     //shade += getAverageColor() * 0.03;
     //shade += (random(2) - 1) ;
@@ -236,6 +236,7 @@ class Boid {
     noStroke();
     stroke(0);
     fill(shade, 90, 200);
+    float fc=random(5,15);
     pushMatrix();
     translate(pos.x, pos.y, pos.z);
     rotate(move.heading());
@@ -251,6 +252,11 @@ class Boid {
     vertex(15 * globalScale, 0, 0);
     //vertex(-7* globalScale, -7* globalScale, 0);
     endShape(CLOSE);
+   // beginShape(TRIANGLES);
+   //ellipse(-1/2*2, 2*2.2,12,2);
+   // ellipse(-0.2*2, 2*2,2,fc);
+   ////ellipse(r, r*2,15,3);
+   // endShape();
     popMatrix();
   }
 
@@ -294,9 +300,8 @@ String messageText = "";
 void setup () {
   size(1800, 1000, P3D);
   //fullScreen();
-  textSize(16);
   
-    
+   
   
   recalculateConstants();
   boids = new ArrayList<Boid>();
@@ -308,6 +313,7 @@ void setup () {
     }
   }
   
+
   setupWalls();
 }
 
@@ -355,19 +361,32 @@ void setupCircle() {
     avoids.add(new Avoid(width * 0.5 + cos(dir) * height*.4, height * 0.5 + sin(dir)*height*.4,0));
   } 
 }
-
+float depth=1000.0;
 
 void draw () {
   noStroke();
-  colorMode(HSB);
-  fill(0, 100);
-  rect(0, 0, width, height);
+  //colorMode(HSB);
+  fill(135, 206,250);
+  rect(-500*width, -500*height, 1000*width, 1000*height);
   stroke(255);
+  
+  if(key=='n')
+  {
+    depth=1.1*depth;
+    key='c';
+  }
+  if(key=='m')
+  {
+    depth=.9*depth;
+    key='c';
+  }
+    
+  camera(mouseX,mouseY,depth,width/2,height/2,0,0,1,0);
   translate(width/2,height/4,0);
   //translate(width/2,0,0);
   rotateX(PI/4);
   rotateZ(PI/4);
-  fill(#590089);
+  fill(135,206,250);
   rect(0,0,width/4,height/2);
   //line(0.0,0.0,0.0,width/4,0.0,0.0);
   //stroke(155);
@@ -470,8 +489,9 @@ void keyPressed () {
 void drawGUI() {
    if(messageTimer > 0) {
      fill((min(30, messageTimer) / 30.0) * 255.0);
-
-    text(messageText, 10, height - 20); 
+    textSize(32);
+    fill(255);
+    text(messageText, 0, 32, 250); 
    }
 }
 
@@ -493,9 +513,12 @@ void mousePressed () {
   case "boids":
     boids.add(new Boid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,125));
     message(boids.size() + " Total Boid" + s(boids.size()));
+    
     break;
   case "avoids":
-    avoids.add(new Avoid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,0));
+    //avoids.add(new Avoid(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,0));
+    stroke(255);
+    line(((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,0,((mouseX-(width/4))/sqrt(3)+(mouseY-(height/2))),(mouseY-(height/2))-((mouseX-(width/4))/sqrt(3)) ,250);
     break;
   }
 }
