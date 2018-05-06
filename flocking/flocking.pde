@@ -1,3 +1,65 @@
+
+Boid barry;
+ArrayList<Boid> boids;
+ArrayList<Avoid> avoids;
+
+float globalScale = 1;
+float eraseRadius = 20;
+String tool = "boids";
+
+// boid control
+float maxSpeed;
+float friendRadius;
+float crowdRadius;
+float avoidRadius;
+float coheseRadius;
+
+boolean option_friend = true;
+boolean option_crowd = true;
+boolean option_avoid = true;
+boolean option_noise = true;
+boolean option_cohese = true;
+
+// gui crap
+int messageTimer = 0;
+String messageText = "";
+
+void setup () {
+  size(1300, 720, P3D);
+  //fullScreen();
+
+  recalculateConstants();
+  boids = new ArrayList<Boid>();
+  avoids = new ArrayList<Avoid>();
+  for (int x = 140; x < width/4 - 100; x+= 140) {
+    for (int y = 120; y < height/2 - 100; y+= 120) {
+        for (int z = 100; z < depth - 100; z+= 120) {
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));              
+        }
+    }
+  }
+  
+
+  setupWalls();
+}
+
+// haha
+void recalculateConstants () {
+  maxSpeed = 2.1 * globalScale;
+  friendRadius = 60 * globalScale;
+  crowdRadius = (friendRadius / 1.3);
+  avoidRadius = 20* globalScale;
+  coheseRadius = friendRadius;
+}
+
+
+
 class Avoid {
    PVector pos;
    
@@ -13,28 +75,8 @@ class Avoid {
      //fill(0, 0, 255);
      //rect(pos.x, pos.y, 15, 5);
      stroke(0);
-     //fill(255);
-     //line(pos.x,pos.y+0.5,250.0,pos.x,pos.y-0.5,250.0);
-     
-     //line(pos.x-0.5,pos.y,0,pos.x+0.5,pos.y,0);
-     //line(pos.x,pos.y-0.5,0,pos.x,pos.y+0.5,0);
-     
-     //line(pos.x+0.5,pos.y,250.0,pos.x-0.5,pos.y,250.0);
-     //stroke(255);
-     //line(pos.x,pos.y-0.5,0,pos.x,pos.y-0.5,250.0);
-     //line(pos.x-0.5,pos.y,0,pos.x-0.5,pos.y,250.0);
-     //line(pos.x+0.5,pos.y,250.0,pos.x+0.5,pos.y,0);
-     //line(pos.x,pos.y+0.5,250.0,pos.x,pos.y+0.5,0);
-     //noStroke();
-     //for(float i=-0.5; i <= 0.5; i=i+.1)
-     //{
-     //  line(pos.x+i,pos.y-(height/2),250.0,pos.x+i,pos.y+(height/2),250.0);
-     //  line(pos.x-(width/4),pos.y+i,250.0,pos.x+(width/4),pos.y+i,250.0);
-     //}
      rect(pos.x,pos.y,.5,.5);
-     
-     
-     //line(pos.x-(width/8),pos.y,0.0,pos.x+(width/8),pos.y,0.0);
+
    }
 }
 class Boid {
@@ -83,20 +125,20 @@ class Boid {
     PVector cohese = getCohesion();
 
     allign.mult(1);
-    //if (!option_friend) allign.mult(0);
+    if (!option_friend) allign.mult(0);
     
     avoidDir.mult(1);
-    //if (!option_crowd) avoidDir.mult(0);
+    if (!option_crowd) avoidDir.mult(0);
     
     avoidObjects.mult(3);
-    //if (!option_avoid) avoidObjects.mult(0);
+    if (!option_avoid) avoidObjects.mult(0);
 
     noise.mult(0.1);
     if (!option_noise)
     noise.mult(0);
 
     cohese.mult(1);
-    //if (!option_cohese) cohese.mult(0);
+    if (!option_cohese) cohese.mult(0);
     
     stroke(0, 255, 160);
 
@@ -272,60 +314,6 @@ class Boid {
     
   }
 }
-Boid barry;
-ArrayList<Boid> boids;
-ArrayList<Avoid> avoids;
-
-float globalScale = 1;
-float eraseRadius = 20;
-String tool = "boids";
-
-// boid control
-float maxSpeed;
-float friendRadius;
-float crowdRadius;
-float avoidRadius;
-float coheseRadius;
-
-boolean option_friend = true;
-boolean option_crowd = true;
-boolean option_avoid = true;
-boolean option_noise = true;
-boolean option_cohese = true;
-
-// gui crap
-int messageTimer = 0;
-String messageText = "";
-
-void setup () {
-  size(1800, 1000, P3D);
-  //fullScreen();
-  
-   
-  
-  recalculateConstants();
-  boids = new ArrayList<Boid>();
-  avoids = new ArrayList<Avoid>();
-  for (int x = 100; x < width - 100; x+= 100) {
-    for (int y = 100; y < height - 100; y+= 100) {
- //   boids.add(new Boid(x + random(3), y + random(3)));
-  //    boids.add(new Boid(x + random(3), y + random(3)));
-    }
-  }
-  
-
-  setupWalls();
-}
-
-// haha
-void recalculateConstants () {
-  maxSpeed = 2.1 * globalScale;
-  friendRadius = 60 * globalScale;
-  crowdRadius = (friendRadius / 1.3);
-  avoidRadius = 20* globalScale;
-  coheseRadius = friendRadius;
-}
-
 
 void setupWalls() {
   avoids = new ArrayList<Avoid>();
@@ -366,7 +354,7 @@ float depth=1000.0;
 void draw () {
   noStroke();
   //colorMode(HSB);
-  fill(135, 206,250);
+  fill(35, 120,250);
   rect(-500*width, -500*height, 1000*width, 1000*height);
   stroke(255);
   
@@ -386,7 +374,7 @@ void draw () {
   //translate(width/2,0,0);
   rotateX(PI/4);
   rotateZ(PI/4);
-  fill(135,206,250);
+  fill(35,120,250);
   rect(0,0,width/4,height/2);
   //line(0.0,0.0,0.0,width/4,0.0,0.0);
   //stroke(155);
