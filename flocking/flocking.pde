@@ -52,9 +52,9 @@ void setup () {
 // haha
 void recalculateConstants () {
   maxSpeed = 2.1 * globalScale;
-  friendRadius = 60 * globalScale;
-  crowdRadius = (friendRadius / 1.3);
-  avoidRadius = 20* globalScale;
+  friendRadius = 80 * globalScale;
+  crowdRadius = (friendRadius / 1.5);
+  avoidRadius = 40* globalScale;
   coheseRadius = friendRadius;
 }
 
@@ -66,11 +66,7 @@ class Avoid {
    Avoid (float xx, float yy, float zz) {
      pos = new PVector(xx,yy,zz);
    }
-   
-   void go () {
-     
-   }
-   
+
    void draw () {
      //fill(0, 0, 255);
      //rect(pos.x, pos.y, 15, 5);
@@ -130,14 +126,14 @@ class Boid {
     avoidDir.mult(1);
     if (!option_crowd) avoidDir.mult(0);
     
-    avoidObjects.mult(3);
+    avoidObjects.mult(3.3);
     if (!option_avoid) avoidObjects.mult(0);
 
-    noise.mult(0.1);
+    noise.mult(0.2);
     if (!option_noise)
     noise.mult(0);
 
-    cohese.mult(1);
+    cohese.mult(1.4);
     if (!option_cohese) cohese.mult(0);
     
     stroke(0, 255, 160);
@@ -195,14 +191,16 @@ class Boid {
       if ((d > 0) && (d < friendRadius)) {
         PVector copy = other.move.copy();
         copy.normalize();
-        copy.div(d); 
+        //copy.div(d); 
         sum.add(copy);
         count++;
       }
-      if (count > 0) {
-        //sum.div((float)count);
-      }
+
     }
+    
+      if (count > 0) {
+        sum.div((float)count);
+      }
     return sum;
   }
 
@@ -248,12 +246,12 @@ class Boid {
   }
   
   PVector getCohesion () {
-   float neighbordist = 50;
+   float neighbordist =coheseRadius/4;
     PVector sum = new PVector(0, 0, 0);   // Start with empty vector to accumulate all locations
     int count = 0;
     for (Boid other : friends) {
       float d = PVector.dist(pos, other.pos);
-      if ((d > 0) && (d < coheseRadius)) {
+      if ((d > neighbordist) && (d < coheseRadius)) {
         sum.add(other.pos); // Add location
         count++;
       }
@@ -376,10 +374,7 @@ void draw () {
   rotateZ(PI/4);
   fill(35,120,250);
   rect(0,0,width/4,height/2);
-  //line(0.0,0.0,0.0,width/4,0.0,0.0);
-  //stroke(155);
-  //line(0.0,0.0,0.0,0.0,height/2,0.0);
-  //stroke(055);
+
   line(0.0,0.0,0.0,0.0,0.0,250.0);
   line(width/4,0.0,0.0,width/4,0.0,250.0);
   line(0.0,height/2,0.0,0.0,height/2,250.0);
@@ -388,21 +383,6 @@ void draw () {
   line(0.0,0.0,250.0,0.0,height/2,250.0);
   line(0.0,height/2,250.0,width/4,height/2,250.0);
   line(width/4,height/2,250.0,width/4,0.0,250.0);
-  //line(width/4,0.0,0.0,width/4,0.0,310.0);
-  //line(width/4,0.0,0.0,width/4,height/2,0.0);
-  //line(0.0,height/2,0.0,0.0,height/2,310.0);
-  //line(0.0,height/2,0.0,width/4,height/2,0.0);
-  //line(width/4,height/2,0.0,width/4,height/2,310.0);
-  //line(0.0,0.0,310.0,width/4,0.0,310.0);
-  //line(width/4,0.0,310.0,width/4,height/2,310.0);
-  //line(width/4,height/2,310.0,0.0,height/2,310.0);
-  //line(0.0,0.0,310.0,0.0,height/2,310.0);
-  //line(250.0,250.0,0.0,500.0,250.0,0.0);
-  //stroke(155);
-  //line(250.0,250.0,0.0,250.0,500.0,0.0);
-  //stroke(055);
-  //line(250.0,250.0,0.0,250.0,250.0,250.0);
-
 
   if (tool == "erase") {
     noFill();
@@ -424,7 +404,7 @@ void draw () {
 
   for (int i = 0; i <avoids.size(); i++) {
     Avoid current = avoids.get(i);
-    current.go();
+    //current.go();
     current.draw();
   }
 
