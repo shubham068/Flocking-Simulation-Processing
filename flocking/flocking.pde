@@ -31,16 +31,18 @@ void setup () {
   recalculateConstants();
   boids = new ArrayList<Boid>();
   avoids = new ArrayList<Avoid>();
-  for (int x = 140; x < width/4 - 100; x+= 140) {
-    for (int y = 120; y < height/2 - 100; y+= 120) {
-        for (int z = 100; z < depth - 100; z+= 120) {
+  for (int x = 120; x < width/4 - 100; x+= 120) {
+    for (int y = 110; y < height/2 - 100; y+= 110) {
+        for (int z = 100; z < depth - 100; z+= 100) {
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
           boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
-          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));              
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10))); 
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10)));
+          boids.add(new Boid(x + random(10), y + random(10),z + random(10))); 
         }
     }
   }
@@ -53,7 +55,7 @@ void setup () {
 void recalculateConstants () {
   maxSpeed = 2.1 * globalScale;
   friendRadius = 80 * globalScale;
-  crowdRadius = (friendRadius / 1.5);
+  crowdRadius = (friendRadius / 1.3);
   avoidRadius = 40* globalScale;
   coheseRadius = friendRadius;
 }
@@ -123,7 +125,7 @@ class Boid {
     allign.mult(1);
     if (!option_friend) allign.mult(0);
     
-    avoidDir.mult(1);
+    avoidDir.mult(-0.5);
     if (!option_crowd) avoidDir.mult(0);
     
     avoidObjects.mult(3.3);
@@ -133,7 +135,7 @@ class Boid {
     if (!option_noise)
     noise.mult(0);
 
-    cohese.mult(1.4);
+    cohese.mult(1.0);
     if (!option_cohese) cohese.mult(0);
     
     stroke(0, 255, 160);
@@ -156,8 +158,8 @@ class Boid {
     for (int i =0; i < boids.size(); i++) {
       Boid test = boids.get(i);
       if (test == this) continue;
-      if (abs(test.pos.x - this.pos.x) < friendRadius &&
-        abs(test.pos.y - this.pos.y) < friendRadius && abs(test.pos.z - this.pos.z) < friendRadius) {
+      if (dist(test.pos.x, test.pos.y, test.pos.z, this.pos.x, this.pos.y, this.pos.z)
+ < friendRadius){
         nearby.add(test);
       }
     }
@@ -200,8 +202,13 @@ class Boid {
     
       if (count > 0) {
         sum.div((float)count);
+        return sum;
       }
-    return sum;
+      
+     else {
+      return new PVector(0.1, 0.1, 0.1);
+    }
+    
   }
 
   PVector getAvoidDir() {
@@ -215,7 +222,7 @@ class Boid {
         // Calculate vector pointing away from neighbor
         PVector diff = PVector.sub(pos, other.pos);
         diff.normalize();
-        diff.div(d);        // Weight by distance
+        diff.div(-1*d);        // Weight by distance
         steer.add(diff);
         count++;            // Keep track of how many
       }
@@ -260,7 +267,11 @@ class Boid {
       sum.div(count);
       
       PVector desired = PVector.sub(sum, pos);  
-      return desired.setMag(0.05);
+     // println(desired.x);
+      desired.div(coheseRadius);
+      //println(desired.x);
+      return desired;
+      //return desired.setMag(0.05);
     } 
     else {
       return new PVector(0, 0, 0);
@@ -281,15 +292,15 @@ class Boid {
     translate(pos.x, pos.y, pos.z);
     rotate(move.heading());
     beginShape();
-    vertex(15 * globalScale, 0, 0);
-    vertex(-5* globalScale, 5* globalScale, 0);
+    vertex(6 * globalScale, 0, 0);
+    vertex(-2* globalScale, 2* globalScale, 0);
     vertex(0,0,0);
-    vertex(-5* globalScale, -5* globalScale, 0);
+    vertex(-2* globalScale, -2* globalScale, 0);
     endShape(CLOSE);
     beginShape();
     vertex(0, 0, 0);
-    vertex(0,0,-5* globalScale);
-    vertex(15 * globalScale, 0, 0);
+    vertex(0,0,-2* globalScale);
+    vertex(6 * globalScale, 0, 0);
     //vertex(-7* globalScale, -7* globalScale, 0);
     endShape(CLOSE);
    // beginShape(TRIANGLES);
@@ -402,11 +413,11 @@ void draw () {
     current.draw();
   }
 
-  for (int i = 0; i <avoids.size(); i++) {
-    Avoid current = avoids.get(i);
-    //current.go();
-    current.draw();
-  }
+  //for (int i = 0; i <avoids.size(); i++) {
+  //  Avoid current = avoids.get(i);
+  //  //current.go();
+  //  current.draw();
+  //}
 
   if (messageTimer > 0) {
     messageTimer -= 1; 
@@ -418,13 +429,7 @@ void keyPressed () {
   if (key == 'q') {
     tool = "boids";
     message("Add boids");
-  } else if (key == 'w') {
-    tool = "avoids";
-    message("Place obstacles");
-  } else if (key == 'e') {
-    tool = "erase";
-    message("Eraser");
-  } else if (key == '-') {
+  }  else if (key == '-') {
     message("Decreased scale");
     globalScale *= 0.8;
   } else if (key == '=') {
